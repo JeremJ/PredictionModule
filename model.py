@@ -9,7 +9,7 @@ from keras import layers
 from keras.applications.vgg16 import VGG16, preprocess_input
 from keras.callbacks import EarlyStopping
 from keras.models import Sequential
-from keras.optimizers import RMSprop
+from tensorflow.keras.optimizers import RMSprop
 from keras.preprocessing.image import ImageDataGenerator
 from tqdm import tqdm
 
@@ -63,9 +63,9 @@ def plot_confusion_matrix(cm, classes,
     plt.xlabel('Predicted label')
     plt.show()
 
-TRAIN_DIR = 'C:/Users/Jerem/Desktop/plucka/train/'
-TEST_DIR = 'C:/Users/Jerem/Desktop/plucka/test/'
-VAL_DIR = 'C:/Users/Jerem/Desktop/plucka/val/'
+TRAIN_DIR = 'F:/praca-magisterska/DANE/train/'
+TEST_DIR = 'F:/praca-magisterska/DANE/test/'
+VAL_DIR = 'F:/praca-magisterska/DANE/val/'
 IMG_SIZE = (224, 224)
 
 X_train, y_train, labels = load_data(TRAIN_DIR, IMG_SIZE)
@@ -144,7 +144,7 @@ X_test_prep = X_test
 X_val_prep = X_val
 
 # load base model
-vgg16_weight_path = 'F:/Inzynierka/CNNImageSegmentation/data/vgg16_weights_th_dim_ordering_th_kernels.h5'
+vgg16_weight_path = 'F:/praca-magisterska/DANE/vgg16_weights_th_dim_ordering_th_kernels.h5'
 base_model = VGG16(
     include_top=False,
     input_shape=(224, 224, 3)
@@ -206,12 +206,12 @@ validation_generator = test_datagen.flow_from_directory(
     seed=RANDOM_SEED
 )
 
-history = model.fit_generator(
+history = model.fit(
     train_generator,
-    steps_per_epoch=60,
-    epochs=EPOCHS,
+    steps_per_epoch=50,
+    epochs=30,
     validation_data=validation_generator,
-    validation_steps=30,
+    validation_steps=20,
     callbacks=[es]
 )
 

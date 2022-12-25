@@ -5,16 +5,14 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import plotly.offline as py
 
-py.init_notebook_mode(connected=True)
 
 # Pandas configuration
 pd.set_option('display.max_columns', None)
 print(cv2.__version__)
 
 import pydicom
-dicom_root = 'C:/Users/Jerem/Desktop/plucka/zdrowe-dicom/'
+dicom_root = 'F:/praca-magisterska/DANE/zdrowe/'
 patients = [ x for x in os.listdir(dicom_root) ]
 print('Patient count: {}'.format(len(patients)))
 
@@ -81,5 +79,5 @@ for patient_no in sorted(patients):
     plt.imshow(crop, cmap='gray')
     plt.show()
     resized = cv2.resize(crop, (IMG_PX_SIZE, IMG_PX_SIZE))
-    plt.imsave('C:/Users/Jerem/Desktop/plucka/zdrowe/' + patient_no.replace('.dcm', '.png'), resized, cmap='gray')
+    plt.imsave('F:/praca-magisterska/DANE/zdrowe-png/' + patient_no.replace('.dcm', '.png'), resized, cmap='gray')
     # img = cv2.imread('C:/Users/Jerem/Desktop/plucka/chore/' + patient_no.replace('.dcm', '.png'))
