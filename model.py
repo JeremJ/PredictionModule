@@ -168,24 +168,24 @@ model.summary()
 
 EPOCHS = 30
 es = EarlyStopping(
-    monitor='val_acc',
+    monitor='val_accuracy',
     mode='max',
     patience=6
 )
 
 train_datagen = ImageDataGenerator(
-    rotation_range=15,
-    width_shift_range=0.1,
-    height_shift_range=0.1,
-    shear_range=0.1,
+    rescale=1./255,
+    rotation_range=40,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    shear_range=0.2,
     brightness_range=[0.5, 1.5],
     horizontal_flip=True,
-    vertical_flip=True,
-    preprocessing_function=preprocess_input
+    fill_mode='nearest'
 )
 
 test_datagen = ImageDataGenerator(
-    preprocessing_function=preprocess_input
+    rescale=1./255
 )
 
 train_generator = train_datagen.flow_from_directory(
@@ -194,6 +194,7 @@ train_generator = train_datagen.flow_from_directory(
     target_size=IMG_SIZE,
     batch_size=32,
     class_mode='binary',
+    shuffle=True,
     seed=RANDOM_SEED
 )
 
@@ -206,6 +207,7 @@ validation_generator = test_datagen.flow_from_directory(
     seed=RANDOM_SEED
 )
 
+
 history = model.fit(
     train_generator,
     steps_per_epoch=50,
@@ -215,3 +217,20 @@ history = model.fit(
     callbacks=[es]
 )
 
+# plot loss
+plt.subplot(211)
+plt.title('Cross Entropy Loss')
+plt.plot(history.history['loss'], color='blue', label='train')
+plt.plot(history.history['val_loss'], color='orange', label='test')
+# plot accuracy
+plt.subplot(212)
+plt.title('Classification Accuracy')
+plt.plot(history.history['accuracy'], color='blue', label='train')
+plt.plot(history.history['val_accuracy'], color='orange', label='test')
+plt.legend()
+plt.subplots_adjust(wspace=0.6, hspace=0.6)
+plt.show()
+
+# problemy przy VGG,
+#1. val_acc kompletnie nie rosło, było na tym samym poziomie i lekko skakało ale kręciło się +/- 0.05 od jakiejś wartości
+# - więc dodałem rescale do validation i training i większy rotation range z 15 do 40
