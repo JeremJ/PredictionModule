@@ -11,31 +11,9 @@ from keras.callbacks import EarlyStopping
 from keras.models import Sequential
 from tensorflow.keras.optimizers import RMSprop
 from keras.preprocessing.image import ImageDataGenerator
-from tqdm import tqdm
+from model_commons import load_data, plot_model_results
 
 RANDOM_SEED = 123
-
-
-def load_data(dir_path, img_size=(150, 150)):
-
-    X = []
-    y = []
-    i = 0
-    labels = dict()
-    for path in tqdm(sorted(os.listdir(dir_path))):
-        if not path.startswith('.'):
-            labels[i] = path
-            for file in os.listdir(dir_path + path):
-                if not file.startswith('.'):
-                    img = cv2.imread(dir_path + path + '/' + file, cv2.CV_32F)
-                    X.append(img)
-                    y.append(i)
-            i += 1
-    X = np.array(X)
-    y = np.array(y)
-    print(f'{len(X)} images loaded from {dir_path} directory.')
-    return X, y, labels
-
 
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
@@ -63,13 +41,13 @@ def plot_confusion_matrix(cm, classes,
     plt.xlabel('Predicted label')
     plt.show()
 
-TRAIN_DIR = 'F:/praca-magisterska/DANE/train/'
-TEST_DIR = 'F:/praca-magisterska/DANE/test/'
-VAL_DIR = 'F:/praca-magisterska/DANE/val/'
+TRAIN_DIR = '/Users/jeremiaszjaworski/PycharmProjects/PredictionModule/train/'
+#TEST_DIR = 'F:/praca-magisterska/DANE/test/'
+VAL_DIR = '/Users/jeremiaszjaworski/PycharmProjects/PredictionModule/val/'
 IMG_SIZE = (224, 224)
 
 X_train, y_train, labels = load_data(TRAIN_DIR, IMG_SIZE)
-X_test, y_test, _ = load_data(TEST_DIR, IMG_SIZE)
+#X_test, y_test, _ = load_data(TEST_DIR, IMG_SIZE)
 X_val, y_val, _ = load_data(VAL_DIR, IMG_SIZE)
 
 def plot_samples(X, y, labels_dict, n=50):
@@ -140,7 +118,7 @@ X_val_crop = crop_imgs(set_name=X_val)
 X_test_crop = crop_imgs(set_name=X_test)
 
 X_train_prep = X_train
-X_test_prep = X_test
+#X_test_prep = X_test
 X_val_prep = X_val
 
 # load base model
@@ -217,19 +195,7 @@ history = model.fit(
     callbacks=[es]
 )
 
-# plot loss
-plt.subplot(211)
-plt.title('Cross Entropy Loss')
-plt.plot(history.history['loss'], color='blue', label='train')
-plt.plot(history.history['val_loss'], color='orange', label='test')
-# plot accuracy
-plt.subplot(212)
-plt.title('Classification Accuracy')
-plt.plot(history.history['accuracy'], color='blue', label='train')
-plt.plot(history.history['val_accuracy'], color='orange', label='test')
-plt.legend()
-plt.subplots_adjust(wspace=0.6, hspace=0.6)
-plt.show()
+plot_model_results(history)
 
 # problemy przy VGG,
 #1. val_acc kompletnie nie rosło, było na tym samym poziomie i lekko skakało ale kręciło się +/- 0.05 od jakiejś wartości
